@@ -7,7 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class City {
+public class Demography {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -17,10 +17,10 @@ public class City {
 
     private String country;
 
-    public City(){
+    public Demography(){
     }
 
-    public City(String country, String city){
+    public Demography(String country, String city){
         this.country = country;
         this.city = city;
     }

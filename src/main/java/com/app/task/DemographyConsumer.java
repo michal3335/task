@@ -12,30 +12,24 @@ import java.util.concurrent.CountDownLatch;
 
 
 @Service
-public class Consumer {
+public class DemographyConsumer {
 
     @Autowired
     private com.app.task.Producer producer;
 
     @Autowired
-    DataProcessing dataProcessing;
+    DataEnricherService dataProcessing;
 
     private CountDownLatch latch = new CountDownLatch(1);
     private final Logger logger = LoggerFactory.getLogger(Producer.class);
 
     @KafkaListener(topics = "input_topic", groupId = "task")
-    public void consume(String message) throws IOException {
+    public void consumeDemographyData(String message) throws IOException {
         logger.info(String.format("Consumed message -> %s", message));
-        JsonObject output = dataProcessing.addData(message);
-        producer.sendMessage("output_topic", output.toString());
+        dataProcessing.addData(message);
         latch.countDown();
     }
 
-    @KafkaListener(topics = "output_topic", groupId = "task")
-    public void consume2(String message) throws IOException {
-        logger.info(String.format("Consumed message -> %s", message));
-        latch.countDown();
-    }
 
 
     public CountDownLatch getLatch() {

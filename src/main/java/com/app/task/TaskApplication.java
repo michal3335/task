@@ -1,6 +1,6 @@
 package com.app.task;
 
-import com.app.task.Model.City;
+import com.app.task.Model.Demography;
 import com.app.task.Repository.CityRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -23,9 +23,9 @@ public class TaskApplication {
 	@EventListener(ApplicationReadyEvent.class)
 	public void fillDB() {
 
-		cityRepo.save(new City("Germany","Berlin"));
+		cityRepo.save(new Demography("Germany","Berlin"));
 
-		cityRepo.save(new City("Poland","Warsaw"));
+		cityRepo.save(new Demography("Poland","Warsaw"));
 
 	}
 
