@@ -70,13 +70,13 @@ class EmbeddedKafkaIntegrationTest {
 		WireMockServer wireMockServer = new WireMockServer(wireMockConfig().port(8089));
 
 
-		wireMockServer.stubFor(get(urlPathMatching("http://localhost:8089/demography/BERLIN"))
+		wireMockServer.stubFor(get(urlPathMatching("/demography/berlin"))
 				.willReturn(aResponse()
 						.withStatus(200)
 						.withHeader("Content-Type", "application/json")
 						.withBody("\"population\": \"3645000\"")));
 
-		wireMockServer.stubFor(get(urlPathMatching("/demography/BERLIN"))
+		wireMockServer.stubFor(get(urlPathMatching("/demography/warsaw"))
 				.willReturn(aResponse()
 						.withStatus(200)
 						.withHeader("Content-Type", "application/json")
