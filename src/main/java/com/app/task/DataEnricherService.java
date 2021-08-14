@@ -1,5 +1,6 @@
 package com.app.task;
 
+import com.app.task.DTO.DemographyDTO;
 import com.app.task.Repository.CityRepo;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
@@ -51,7 +52,9 @@ public class DataEnricherService {
     }
 
     private void send(JsonObject demography){
-        producer.sendMessage("output_topic", demography.toString());
+        Gson gson = new Gson();
+        DemographyDTO demographyToSend = gson.fromJson(demography,DemographyDTO.class);
+        producer.sendMessage("output_topic", demographyToSend.toString());
     }
 
     private String convertResponseToString(HttpResponse response) throws IOException {
