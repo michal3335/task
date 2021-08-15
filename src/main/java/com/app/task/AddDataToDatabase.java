@@ -8,9 +8,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class AddDataToDatabase {
 
-    @Autowired
+
     private DemographyRepo demographyRepo;
 
+    @Autowired
+    public AddDataToDatabase(DemographyRepo demographyRepo) {
+        this.demographyRepo = demographyRepo;
+    }
 
     public void fillDB() {
         demographyRepo.save(new Demography("GERMANY","BERLIN"));

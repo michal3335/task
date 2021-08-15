@@ -14,16 +14,19 @@ import java.util.concurrent.CountDownLatch;
 public class DemographyConsumer {
 
 
-    @Autowired
-    DataEnricherService dataProcessing;
-
+    private  DataEnricherService dataEnricherService;
     private CountDownLatch latch = new CountDownLatch(1);
     private final Logger logger = LoggerFactory.getLogger(Producer.class);
+    
+    @Autowired
+    public DemographyConsumer(DataEnricherService dataEnricherService){
+        this.dataEnricherService = dataEnricherService;
+    }
 
     @KafkaListener(topics = "input_topic", groupId = "task")
     public void consumeDemographyData(String message) throws IOException {
         logger.info(String.format("Consumed message -> %s", message));
-        dataProcessing.addData(message);
+        dataEnricherService.addData(message);
         latch.countDown();
     }
 

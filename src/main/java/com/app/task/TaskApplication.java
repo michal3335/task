@@ -10,8 +10,12 @@ import org.springframework.context.event.EventListener;
 @SpringBootApplication
 public class TaskApplication {
 
-	@Autowired
 	private AddDataToDatabase addDataToDatabase;
+
+	@Autowired
+	public TaskApplication(AddDataToDatabase addDataToDatabase) {
+		this.addDataToDatabase = addDataToDatabase;
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(TaskApplication.class, args);

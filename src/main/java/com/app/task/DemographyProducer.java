@@ -12,8 +12,12 @@ public class DemographyProducer {
     private static final Logger logger = LoggerFactory.getLogger(DemographyProducer.class);
 
 
-    @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    public DemographyProducer(KafkaTemplate<String, String> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     public void sendMessage(String topic, String message) {
         logger.info(String.format("Producing message -> %s", message));

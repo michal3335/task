@@ -16,12 +16,15 @@ import java.util.Scanner;
 @Service
 public class DataEnricherService {
 
-    @Autowired
-    private DemographyRepo demographyRepo;
 
-    @Autowired
+    private DemographyRepo demographyRepo;
     private DemographyProducer producer;
 
+    @Autowired
+    public DataEnricherService(DemographyRepo demographyRepo, DemographyProducer producer) {
+        this.demographyRepo = demographyRepo;
+        this.producer = producer;
+    }
 
     public void addData(String message) throws IOException {
         JsonObject input  = new JsonParser().parse(message).getAsJsonObject();
