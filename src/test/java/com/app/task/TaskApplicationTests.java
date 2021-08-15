@@ -3,10 +3,8 @@ import com.app.task.Repository.DemographyRepo;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import java.util.concurrent.TimeUnit;
@@ -26,9 +24,6 @@ class EmbeddedKafkaIntegrationTest {
 
 	@Autowired
 	private DemographyRepo demographyRepo;
-
-	@Mock
-	private KafkaTemplate kafkaTemplate;
 
 
 	@Test
@@ -62,8 +57,6 @@ class EmbeddedKafkaIntegrationTest {
 
 		wireMockServer.stop();
 
-		//Mockito.verify(kafkaTemplate).send("input_topic",input.toString());
-
 	}
 
 
@@ -71,8 +64,6 @@ class EmbeddedKafkaIntegrationTest {
 	public void DatabaseTest() {
 		System.out.println(demographyRepo.findById((long) 1));
 	}
-
-
 
 
 }
