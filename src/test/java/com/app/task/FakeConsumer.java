@@ -1,6 +1,9 @@
 package com.app.task;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.kafka.clients.producer.Producer;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +32,14 @@ public class FakeConsumer {
     @KafkaListener(topics = "output_topic", groupId = "task")
     public void consumeDemographyData(String message) throws IOException {
         logger.info(String.format("Consumed message -> %s", message));
-        dataEnricherService.addData(message);
         latch.countDown();
+
+        JsonObject expectedOutput = new JsonObject();
+        expectedOutput.addProperty("city", "BERLIN");
+        expectedOutput.addProperty("country","GERMANY");
+        expectedOutput.addProperty("population","3645000");
+
+        Assertions.assertEquals(expectedOutput,getDemography(message));
     }
 
 
@@ -39,4 +48,10 @@ public class FakeConsumer {
     }
 
 
+    public JsonObject getDemography(String data){
+        JsonObject demography  = new JsonParser().parse(data).getAsJsonObject();
+
+
+        return demography;
+    }
 }

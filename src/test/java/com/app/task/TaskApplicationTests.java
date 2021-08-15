@@ -1,7 +1,10 @@
 package com.app.task;
+import com.app.task.DTO.DemographyDTO;
 import com.app.task.Repository.DemographyRepo;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,15 +22,18 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9093", "port=9093" })
 class EmbeddedKafkaIntegrationTest {
 
-	@Autowired
 	private DemographyConsumer demographyConsumer;
 
-	@Autowired
 	private DemographyProducer producer;
 
-	@Autowired
 	private DemographyRepo demographyRepo;
 
+	@Autowired
+	public EmbeddedKafkaIntegrationTest(DemographyConsumer demographyConsumer, DemographyProducer producer, DemographyRepo demographyRepo) {
+		this.demographyConsumer = demographyConsumer;
+		this.producer = producer;
+		this.demographyRepo = demographyRepo;
+	}
 
 	@Test
 	public void shouldEnrichDemographyDataWithCountryandPopulationAndSendToOutputTopic()
@@ -57,6 +63,7 @@ class EmbeddedKafkaIntegrationTest {
 
 		producer.sendMessage("input_topic", input.toString());
 		demographyConsumer.getLatch().await(10000, TimeUnit.MILLISECONDS);
+
 
 		wireMockServer.stop();
 
