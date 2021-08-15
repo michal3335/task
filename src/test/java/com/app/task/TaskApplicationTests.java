@@ -1,21 +1,9 @@
 package com.app.task;
-import com.app.task.Repository.CityRepo;
+import com.app.task.Repository.DemographyRepo;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonObject;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -34,10 +22,10 @@ class EmbeddedKafkaIntegrationTest {
 	private DemographyConsumer demographyConsumer;
 
 	@Autowired
-	private Producer producer;
+	private DemographyProducer producer;
 
 	@Autowired
-	private CityRepo cityRepo;
+	private DemographyRepo demographyRepo;
 
 	@Mock
 	private KafkaTemplate kafkaTemplate;
@@ -47,18 +35,16 @@ class EmbeddedKafkaIntegrationTest {
 	public void shouldEnrichDemographyDataWithCountryandPopulationAndSendToOutputTopic()
 			throws Exception {
 
-
-
 		WireMockServer wireMockServer = new WireMockServer(wireMockConfig().port(8089));
 
 
-		wireMockServer.stubFor(get(urlPathMatching("/demography/berlin"))
+		wireMockServer.stubFor(get(urlPathMatching("/demography/BERLIN"))
 				.willReturn(aResponse()
 						.withStatus(200)
 						.withHeader("Content-Type", "application/json")
 						.withBody("{\"population\": \"3645000\"}")));
 
-		wireMockServer.stubFor(get(urlPathMatching("/demography/warsaw"))
+		wireMockServer.stubFor(get(urlPathMatching("/demography/WARSAW"))
 				.willReturn(aResponse()
 						.withStatus(200)
 						.withHeader("Content-Type", "application/json")
@@ -69,7 +55,7 @@ class EmbeddedKafkaIntegrationTest {
 
 
 		JsonObject input = new JsonObject();
-		input.addProperty("city", "Berlin");
+		input.addProperty("city", "BERLIN");
 
 		producer.sendMessage("input_topic", input.toString());
 		demographyConsumer.getLatch().await(10000, TimeUnit.MILLISECONDS);
@@ -83,7 +69,7 @@ class EmbeddedKafkaIntegrationTest {
 
 	@Test
 	public void DatabaseTest() {
-		System.out.println(cityRepo.findById((long) 1));
+		System.out.println(demographyRepo.findById((long) 1));
 	}
 
 

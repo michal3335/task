@@ -1,36 +1,33 @@
 package com.app.task;
 
 import com.app.task.DTO.DemographyDTO;
-import com.app.task.Repository.CityRepo;
+import com.app.task.Repository.DemographyRepo;
 import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.Scanner;
 
 @Service
 public class DataEnricherService {
 
     @Autowired
-    private CityRepo cityRepo;
+    private DemographyRepo demographyRepo;
 
     @Autowired
-    private com.app.task.Producer producer;
+    private DemographyProducer producer;
+
 
     public void addData(String message) throws IOException {
-
         JsonObject input  = new JsonParser().parse(message).getAsJsonObject();
         String city = input.get("city").getAsString();
-        String country = cityRepo.checkCountry(city);
+        String country = demographyRepo.checkCountry(city);
         input.addProperty("country",country);
         JsonObject demography = enrich(input);
         send(demography);
@@ -38,10 +35,9 @@ public class DataEnricherService {
     }
 
     private JsonObject enrich (JsonObject demography) throws IOException {
-
         CloseableHttpClient httpClient = HttpClients.createDefault();
         String city = demography.get("city").getAsString();
-        HttpGet request = new HttpGet("http://localhost:8089/demography/berlin");
+        HttpGet request = new HttpGet("http://localhost:8089/demography/"+city);
         request.addHeader("Accept", "application/json");
         HttpResponse httpResponse = httpClient.execute(request);
         String responseString = convertResponseToString(httpResponse);
@@ -62,6 +58,7 @@ public class DataEnricherService {
         Scanner scanner = new Scanner(responseStream, "UTF-8");
         String responseString = scanner.useDelimiter("\\Z").next();
         scanner.close();
+
         return responseString;
     }
 }

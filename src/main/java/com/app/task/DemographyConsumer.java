@@ -1,6 +1,5 @@
 package com.app.task;
 
-import com.google.gson.JsonObject;
 import org.apache.kafka.clients.producer.Producer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +13,6 @@ import java.util.concurrent.CountDownLatch;
 @Service
 public class DemographyConsumer {
 
-    @Autowired
-    private com.app.task.Producer producer;
 
     @Autowired
     DataEnricherService dataProcessing;
@@ -29,7 +26,6 @@ public class DemographyConsumer {
         dataProcessing.addData(message);
         latch.countDown();
     }
-
 
 
     public CountDownLatch getLatch() {
