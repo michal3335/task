@@ -5,9 +5,12 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -28,11 +31,14 @@ class EmbeddedKafkaIntegrationTest {
 
 	private DemographyRepo demographyRepo;
 
+	private FakeConsumer fakeConsumer;
+
 	@Autowired
-	public EmbeddedKafkaIntegrationTest(DemographyConsumer demographyConsumer, DemographyProducer producer, DemographyRepo demographyRepo) {
+	public EmbeddedKafkaIntegrationTest(DemographyConsumer demographyConsumer, DemographyProducer producer, DemographyRepo demographyRepo, FakeConsumer fakeConsumer) {
 		this.demographyConsumer = demographyConsumer;
 		this.producer = producer;
 		this.demographyRepo = demographyRepo;
+		this.fakeConsumer = fakeConsumer;
 	}
 
 	@Test
@@ -61,9 +67,19 @@ class EmbeddedKafkaIntegrationTest {
 		JsonObject input = new JsonObject();
 		input.addProperty("city", "BERLIN");
 
-		producer.sendMessage("input_topic", input.toString());
-		demographyConsumer.getLatch().await(10000, TimeUnit.MILLISECONDS);
 
+		JsonObject expectedOutput = new JsonObject();
+		expectedOutput.addProperty("city", "BERLIN");
+		expectedOutput.addProperty("country","GERMANY");
+		expectedOutput.addProperty("population","3645000");
+
+
+			producer.sendMessage("input_topic", input.toString());
+			demographyConsumer.getLatch().await(10000, TimeUnit.MILLISECONDS);
+			fakeConsumer.getLatch().await(10000, TimeUnit.MILLISECONDS);
+
+
+		Assertions.assertEquals(expectedOutput,fakeConsumer.getMessage());
 
 		wireMockServer.stop();
 
